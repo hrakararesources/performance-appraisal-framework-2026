@@ -1,7 +1,4 @@
-<!DO
-  var navOthersHr=document.getElementById('nav-eval-others-hr');
-  if(navOthersHr){navOthersHr.style.display=subs.length>0?'':'none';
-    var cntHr=document.getElementById('nav-sub-count-hr');if(cntHr&&subs.length>0){cntHr.textContent=subs.length;cntHr.style.display='';}}C\n  var navOthersHr=document.getElementById('nav-eval-others-hr');\n  if(navOthersHr){navOthersHr.style.display=subs.length>0?'':'none';\n    var cntHr=document.getElementById('nav-sub-count-hr');if(cntHr&&subs.length>0){cntHr.textContent=subs.length;cntHr.style.display='';}}\nTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8">
@@ -241,12 +238,7 @@ textarea{resize:vertical;min-height:70px;}
       <input type="password" id="login-pass" placeholder="XXXXX" maxlength="5" onkeydown="if(event.key==='Enter')doLogin()"/>
     </div>
     <button class="btn btn-primary btn-full" onclick="doLogin()" id="t-login-btn">เข้าสู่ระบบ / Login</button>
-    <div class="demo-hint">
-      <b>Demo:</b> O-Level: <code>AKR26010000</code>/<code>12345</code> &nbsp;|&nbsp;
-      S-TM: <code>AKR26020001</code>/<code>34567</code> &nbsp;|&nbsp;
-      M Final: <code>AKR26030001</code>/<code>45678</code> &nbsp;|&nbsp;
-      HR: <code>HR001</code>/<code>99999</code>
-    </div>
+    
   </div>
 </div>
 </div>
@@ -282,11 +274,11 @@ textarea{resize:vertical;min-height:70px;}
         </div>
         <div class="user-meta" id="sb-meta">
           <div class="user-meta-item">
-            <div class="user-meta-label" id="t-dept-label" data-th="ฝ่าย" data-en="DEPT">ฝ่าย</div>
+            <div class="user-meta-label" id="t-dept-label">ฝ่าย</div>
             <div class="user-meta-value" id="sb-dept">—</div>
           </div>
           <div class="user-meta-item">
-            <div class="user-meta-label" id="t-pos-label" data-th="ตำแหน่ง" data-en="POSITION">ตำแหน่ง</div>
+            <div class="user-meta-label" id="t-pos-label">ตำแหน่ง</div>
             <div class="user-meta-value" id="sb-position">—</div>
           </div>
         </div>
@@ -326,8 +318,13 @@ textarea{resize:vertical;min-height:70px;}
     <div class="nav-group" id="nav-hr" style="display:none">
       <div class="nav-label" data-th="ประเมินตนเอง" data-en="My Evaluation">ประเมินตนเอง</div>
       <div class="nav-item" onclick="renderSelfEvalPage()" id="nav-hr-self-eval">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <span data-th="ประเมินตนเอง" data-en="Self Evaluation">ประเมินตนเอง</span>
+      </div>
+      <div class="nav-item" onclick="showPage('page-eval-others')" id="nav-eval-others-hr" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span data-th="ประเมินพนักงาน" data-en="Evaluate Staff">ประเมินพนักงาน</span>
+        <span class="badge badge-red" id="nav-sub-count-hr" style="margin-left:auto;display:none;"></span>
       </div>
       <div class="nav-label">HR Admin</div>
       <div class="nav-item active" onclick="showPage('page-hr-dashboard')">
@@ -789,7 +786,6 @@ function setLang(lang) {
   if(currentPage === 'page-hr-report') renderHrReport();
   if(currentPage === 'page-topic-editor') initTopicEditor();
   if(currentPage === 'page-score-desc-editor') initDescEditor();
-  // Update sidebar with new language
   if(currentUser) setupSidebar();
 }
 
@@ -1176,12 +1172,12 @@ function setupSidebar(){
   const navOthers=document.getElementById('nav-eval-others');
   if(navOthers){navOthers.style.display=subs.length>0?'':'none';
     const cnt=document.getElementById('nav-sub-count');if(cnt&&subs.length>0){cnt.textContent=subs.length;cnt.style.display='';}}
-  var navOthersHr=document.getElementById('nav-eval-others-hr');
-  if(navOthersHr){navOthersHr.style.display=subs.length>0?'':'none';
-    var cntHr=document.getElementById('nav-sub-count-hr');if(cntHr&&subs.length>0){cntHr.textContent=subs.length;cntHr.style.display='';}}
 }
 
-// ── NAVIGATION ──
+
+  var navOthersHr=document.getElementById('nav-eval-others-hr');
+  if(navOthersHr){navOthersHr.style.display=subs.length>0?'':'none';
+    var cntHr=document.getElementById('nav-sub-count-hr');if(cntHr&&subs.length>0){cntHr.textContent=subs.length;cntHr.style.display='';}}// ── NAVIGATION ──
 const PAGE_TITLES={
   'page-home':{th:'หน้าหลัก',en:'Home'},'page-self-eval':{th:'ประเมินตนเอง',en:'Self Evaluation'},
   'page-eval-others':{th:'ประเมินพนักงาน',en:'Evaluate Staff'},'page-eval-sub':{th:'ประเมินพนักงาน',en:'Evaluate Staff'},
