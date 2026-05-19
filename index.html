@@ -1957,6 +1957,30 @@ function exportEmployeeCSV() {
   showToast(currentLang==='th'?'Export CSV เรียบร้อย':'CSV exported','success');
 }
 
+// ── โหลดข้อมูลจาก Sheets ─────────────────────────────────────
+async function loadFromSheets() {
+  showSplash('กำลังโหลดข้อมูลจาก Google Sheets…');
+  try {
+    const r = await gasRun('getAll');
+    USERS = r.users || {};
+    evalStore = r.evalStore || {};
+    inbox = r.inbox || {};
+    SUBORDINATES = {};
+    Object.entries(USERS).forEach(([id, u]) => {
+      if (u.supervisorId) {
+        if (!SUBORDINATES[u.supervisorId]) SUBORDINATES[u.supervisorId] = [];
+        SUBORDINATES[u.supervisorId].push(id);
+      }
+    });
+    GAS_READY = true;
+    hideSplash();
+  } catch(err) {
+    hideSplash();
+    showToast('โหลดข้อมูลไม่สำเร็จ: ' + err.message, 'error');
+    console.error('loadFromSheets error:', err);
+  }
+}
+
 // Init
 window.addEventListener('DOMContentLoaded',()=>{ applyTranslations(); loadFromSheets(); });
 
