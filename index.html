@@ -956,26 +956,66 @@ let currentUser = null, currentSubId = null, selfScores = {}, subScores = {}, cu
 let GAS_READY = false;
 
 // ── Wrap google.script.run เป็น Promise ──────────────────────
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzcfV6TvLblcR7_nruJgZs_ZwXf9hMjS0NyfS251Xka_MQFrhDv4sEWZID7yR-PIJQHlQ/exec'; // ← วาง Web App URL ที่นี่
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzf5udu7NGbIbVuISYRPSu5FyM5z7zAI-mAKlUgR36zNCWSGgMyb9BN89iMHOgUVzdnSA/exec'; // ← วาง Web App URL ที่นี่
 
 function gasRun(fnName) {
   var args = Array.prototype.slice.call(arguments, 1);
-  var params = 'action=' + encodeURIComponent(fnName);
-  if (args.length > 0) params += '&data=' + encodeURIComponent(JSON.stringify(args[0]));
-  return fetch(GAS_URL + '?' + params, {
-    method: 'GET',
-    redirect: 'follow',
-    credentials: 'omit'
-  }).then(function(r) {
-    return r.text();
-  }).then(function(text) {
-    try { return JSON.parse(text); } catch(e) { throw new Error('Parse error: ' + text.substring(0, 100)); }
-  }).then(function(r) {
-    if (r && r.error) throw new Error(r.error);
-    return r;
+  var params = {action: fnName};
+  if (args.length > 0) params.data = JSON.stringify(args[0]);
+  return new Promise(function(resolve, reject) {
+    var cbName = '_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    var timer = setTimeout(function() {
+      delete window[cbName];
+      if (s && s.parentNode) s.parentNode.removeChild(s);
+      reject(new Error('Timeout'));
+    }, 30000);
+    window[cbName] = function(data) {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (s && s.parentNode) s.parentNode.removeChild(s);
+      if (data && data.error) reject(new Error(data.error));
+      else resolve(data);
+    };
+    params.callback = cbName;
+    var qs = Object.keys(params).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+    }).join('&');
+    var s = document.createElement('script');
+    s.src = GAS_URL + '?' + qs;
+    s.onerror = function() {
+      clearTimeout(timer);
+      delete window[cbName];
+      reject(new Error('Script load error'));
+    };
+    document.head.appendChild(s);
   });
 }
 
+// ── โหลดข้อมูลจาก Sheets ─────────────────────────────────────
+async function loadFromSheets() {
+  showSplash('กำลังโหลดข้อมูลจาก Google Sheets…');
+  try {
+    const r = await gasRun('getAll');
+    USERS = r.users || {};
+    evalStore = r.evalStore || {};
+    inbox = r.inbox || {};
+    SUBORDINATES = {};
+    Object.entries(USERS).forEach(([id, u]) => {
+      if (u.supervisorId) {
+        if (!SUBORDINATES[u.supervisorId]) SUBORDINATES[u.supervisorId] = [];
+        SUBORDINATES[u.supervisorId].push(id);
+      }
+    });
+    GAS_READY = true;
+    hideSplash();
+  } catch(err) {
+    hideSplash();
+    showToast('โหลดข้อมูลไม่สำเร็จ: ' + err.message);
+    console.error(err);
+  }
+}
+
+// ── Sync helpers ──────────────────────────────────────────────
 function syncUser(empId) {
   const u = USERS[empId]; if (!u) return;
   gasRun('saveUser', {
@@ -1134,9 +1174,10 @@ function setupSidebar(){
     const cnt=document.getElementById('nav-sub-count');if(cnt&&subs.length>0){cnt.textContent=subs.length;cnt.style.display='';}}
   var navOthersHr=document.getElementById('nav-eval-others-hr');
   if(navOthersHr){navOthersHr.style.display=subs.length>0?'':'none';
-    var cntHr=document.getElementById('nav-sub-count-hr');if(cntHr&&subs.length>0){cntHr.textContent=subs.length;cntHr.style.display='';}}
+    var cntHr=document.getElementById('nav-sub-count-hr');if(cntHr&&subs.length>0){cntHr.textContent=subs.length;cntHr.style.display='';}};
+}
 
-}// ── NAVIGATION ──
+// ── NAVIGATION ──
 const PAGE_TITLES={
   'page-home':{th:'หน้าหลัก',en:'Home'},'page-self-eval':{th:'ประเมินตนเอง',en:'Self Evaluation'},
   'page-eval-others':{th:'ประเมินพนักงาน',en:'Evaluate Staff'},'page-eval-sub':{th:'ประเมินพนักงาน',en:'Evaluate Staff'},
@@ -1955,30 +1996,6 @@ function exportEmployeeCSV() {
   a.download = ("AKR_Employees_"+(new Date().toISOString().slice(0,10))+".csv");
   a.click();
   showToast(currentLang==='th'?'Export CSV เรียบร้อย':'CSV exported','success');
-}
-
-// ── โหลดข้อมูลจาก Sheets ─────────────────────────────────────
-async function loadFromSheets() {
-  showSplash('กำลังโหลดข้อมูลจาก Google Sheets…');
-  try {
-    const r = await gasRun('getAll');
-    USERS = r.users || {};
-    evalStore = r.evalStore || {};
-    inbox = r.inbox || {};
-    SUBORDINATES = {};
-    Object.entries(USERS).forEach(([id, u]) => {
-      if (u.supervisorId) {
-        if (!SUBORDINATES[u.supervisorId]) SUBORDINATES[u.supervisorId] = [];
-        SUBORDINATES[u.supervisorId].push(id);
-      }
-    });
-    GAS_READY = true;
-    hideSplash();
-  } catch(err) {
-    hideSplash();
-    showToast('โหลดข้อมูลไม่สำเร็จ: ' + err.message, 'error');
-    console.error('loadFromSheets error:', err);
-  }
 }
 
 // Init
