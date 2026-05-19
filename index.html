@@ -279,11 +279,11 @@ textarea{resize:vertical;min-height:70px;}
         </div>
         <div class="user-meta" id="sb-meta">
           <div class="user-meta-item">
-            <div class="user-meta-label" id="t-dept-label">ฝ่าย</div>
+            <div class="user-meta-label" id="t-dept-label" data-th="ฝ่าย" data-en="DEPT">ฝ่าย</div>
             <div class="user-meta-value" id="sb-dept">—</div>
           </div>
           <div class="user-meta-item">
-            <div class="user-meta-label" id="t-pos-label">ตำแหน่ง</div>
+            <div class="user-meta-label" id="t-pos-label" data-th="ตำแหน่ง" data-en="POSITION">ตำแหน่ง</div>
             <div class="user-meta-value" id="sb-position">—</div>
           </div>
         </div>
@@ -1153,8 +1153,12 @@ function setupSidebar(){
   document.getElementById('sb-avatar').textContent=(userName(u)).charAt(0);
   document.getElementById('sb-name').textContent=userName(u);
   document.getElementById('sb-id').textContent=u.id;
-  document.getElementById('sb-dept').textContent=u.dept?u.dept[currentLang]:'—';
-  document.getElementById('sb-position').textContent=u.position?u.position[currentLang]:'—';
+  document.getElementById('sb-dept').textContent=u.dept?(u.dept[currentLang]||u.dept.th):'—';
+  document.getElementById('sb-position').textContent=u.position?(u.position[currentLang]||u.position.th):'—';
+  var deptLabel=document.getElementById('t-dept-label');
+  var posLabel=document.getElementById('t-pos-label');
+  if(deptLabel) deptLabel.textContent=currentLang==='en'?'DEPT':'ฝ่าย';
+  if(posLabel) posLabel.textContent=currentLang==='en'?'POSITION':'ตำแหน่ง';
   document.getElementById('sb-level-badge').textContent=u.level;
   const tenEl=document.getElementById('sb-tenure-badge');
   if(tenEl){const y=calcTenure(u.startDate);tenEl.textContent=y!==null?tenureLabel(u.startDate):'';tenEl.style.display=y!==null?'':'none';}
