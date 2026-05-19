@@ -954,16 +954,34 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzf5udu7NGbIbVuISYRPSu5
 
 function gasRun(fnName) {
   var args = Array.prototype.slice.call(arguments, 1);
-  var body = {action: fnName};
-  if (args.length > 0) body.data = args[0];
-  return fetch(GAS_URL, {
-    method: 'POST',
-    mode: 'cors',
-    headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify(body)
-  }).then(function(r){ return r.json(); }).then(function(r){
-    if (r && r.error) throw new Error(r.error);
-    return r;
+  var params = {action: fnName};
+  if (args.length > 0) params.data = JSON.stringify(args[0]);
+  return new Promise(function(resolve, reject) {
+    var cbName = '_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    var timer = setTimeout(function() {
+      delete window[cbName];
+      if (s && s.parentNode) s.parentNode.removeChild(s);
+      reject(new Error('Timeout'));
+    }, 30000);
+    window[cbName] = function(data) {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (s && s.parentNode) s.parentNode.removeChild(s);
+      if (data && data.error) reject(new Error(data.error));
+      else resolve(data);
+    };
+    params.callback = cbName;
+    var qs = Object.keys(params).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+    }).join('&');
+    var s = document.createElement('script');
+    s.src = GAS_URL + '?' + qs;
+    s.onerror = function() {
+      clearTimeout(timer);
+      delete window[cbName];
+      reject(new Error('Script load error'));
+    };
+    document.head.appendChild(s);
   });
 }
 
