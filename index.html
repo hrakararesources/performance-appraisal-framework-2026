@@ -960,62 +960,22 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzcfV6TvLblcR7_nruJgZs_
 
 function gasRun(fnName) {
   var args = Array.prototype.slice.call(arguments, 1);
-  var params = {action: fnName};
-  if (args.length > 0) params.data = JSON.stringify(args[0]);
-  return new Promise(function(resolve, reject) {
-    var cbName = '_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-    var timer = setTimeout(function() {
-      delete window[cbName];
-      if (s && s.parentNode) s.parentNode.removeChild(s);
-      reject(new Error('Timeout'));
-    }, 30000);
-    window[cbName] = function(data) {
-      clearTimeout(timer);
-      delete window[cbName];
-      if (s && s.parentNode) s.parentNode.removeChild(s);
-      if (data && data.error) reject(new Error(data.error));
-      else resolve(data);
-    };
-    params.callback = cbName;
-    var qs = Object.keys(params).map(function(k) {
-      return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
-    }).join('&');
-    var s = document.createElement('script');
-    s.src = GAS_URL + '?' + qs;
-    s.onerror = function() {
-      clearTimeout(timer);
-      delete window[cbName];
-      reject(new Error('Script load error'));
-    };
-    document.head.appendChild(s);
+  var params = 'action=' + encodeURIComponent(fnName);
+  if (args.length > 0) params += '&data=' + encodeURIComponent(JSON.stringify(args[0]));
+  return fetch(GAS_URL + '?' + params, {
+    method: 'GET',
+    redirect: 'follow',
+    credentials: 'omit'
+  }).then(function(r) {
+    return r.text();
+  }).then(function(text) {
+    try { return JSON.parse(text); } catch(e) { throw new Error('Parse error: ' + text.substring(0, 100)); }
+  }).then(function(r) {
+    if (r && r.error) throw new Error(r.error);
+    return r;
   });
 }
 
-// ── โหลดข้อมูลจาก Sheets ─────────────────────────────────────
-async function loadFromSheets() {
-  showSplash('กำลังโหลดข้อมูลจาก Google Sheets…');
-  try {
-    const r = await gasRun('getAll');
-    USERS = r.users || {};
-    evalStore = r.evalStore || {};
-    inbox = r.inbox || {};
-    SUBORDINATES = {};
-    Object.entries(USERS).forEach(([id, u]) => {
-      if (u.supervisorId) {
-        if (!SUBORDINATES[u.supervisorId]) SUBORDINATES[u.supervisorId] = [];
-        SUBORDINATES[u.supervisorId].push(id);
-      }
-    });
-    GAS_READY = true;
-    hideSplash();
-  } catch(err) {
-    hideSplash();
-    showToast('โหลดข้อมูลไม่สำเร็จ: ' + err.message);
-    console.error(err);
-  }
-}
-
-// ── Sync helpers ──────────────────────────────────────────────
 function syncUser(empId) {
   const u = USERS[empId]; if (!u) return;
   gasRun('saveUser', {
