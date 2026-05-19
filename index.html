@@ -1757,14 +1757,17 @@ function validateRow(row, headers, lineNum) {
   if (obj.level && !VALID_LEVELS.includes(obj.level))
     errors.push(("level \""+(obj.level)+"\" ไม่ถูกต้อง"));
 
-  // password must be 5 chars if provided
+  // password - pad leading zeros
+  if (obj.password) obj.password = String(obj.password).padStart(5,'0');
   if (obj.password && obj.password.length !== 5)
     errors.push(("password ต้องมี 5 หลัก (ได้ "+(obj.password.length)+")"));
 
-  // start_date format check
+  // start_date - support DD/MM/YYYY
   if (obj.start_date) {
+    var dp=obj.start_date.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if(dp) obj.start_date=dp[3]+'-'+dp[2].padStart(2,'0')+'-'+dp[1].padStart(2,'0');
     const d = new Date(obj.start_date);
-    if (isNaN(d.getTime())) errors.push(("start_date \""+(obj.start_date)+"\" รูปแบบไม่ถูกต้อง (ใช้ YYYY-MM-DD)"));
+    if (isNaN(d.getTime())) errors.push(("start_date '"+obj.start_date+"' รูปแบบไม่ถูกต้อง"));
     else if (d > new Date())  warnings.push(("start_date อยู่ในอนาคต"));
   }
 
