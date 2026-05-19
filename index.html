@@ -1142,7 +1142,9 @@ function doLogin(){
   const id=document.getElementById('login-id').value.trim();
   const pass=document.getElementById('login-pass').value.trim();
   const user=USERS[id];
-  if(!user||user.pass!==pass){showToast(currentLang==='th'?'รหัสไม่ถูกต้อง':'Incorrect credentials');return;}
+  const userPass=String(user.pass).padStart(5,'0');
+  const inputPass=pass.padStart(5,'0');
+  if(!user||userPass!==inputPass){showToast(currentLang==='th'?'รหัสไม่ถูกต้อง':'Incorrect credentials');return;}
   if(user.inactive){showToast(currentLang==='th'?'บัญชีนี้ถูกปิดใช้งาน กรุณาติดต่อ HR':'This account is deactivated. Please contact HR');return;}
   currentUser={id,...user};
   document.getElementById('screen-login').classList.add('hidden');
