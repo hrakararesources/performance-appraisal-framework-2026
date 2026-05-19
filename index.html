@@ -781,6 +781,8 @@ function setLang(lang) {
   if(currentPage === 'page-hr-report') renderHrReport();
   if(currentPage === 'page-topic-editor') initTopicEditor();
   if(currentPage === 'page-score-desc-editor') initDescEditor();
+  // Update sidebar with new language
+  if(currentUser) updateSidebar(currentUser);
 }
 
 function applyTranslations() {
