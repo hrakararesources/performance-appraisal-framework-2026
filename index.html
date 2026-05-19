@@ -321,6 +321,11 @@ textarea{resize:vertical;min-height:70px;}
     </div>
 
     <div class="nav-group" id="nav-hr" style="display:none">
+      <div class="nav-label" data-th="ประเมินตนเอง" data-en="My Evaluation">ประเมินตนเอง</div>
+      <div class="nav-item" onclick="renderSelfEvalPage();showPage('page-self-eval')" id="nav-hr-self-eval">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span data-th="ประเมินตนเอง" data-en="Self Evaluation">ประเมินตนเอง</span>
+      </div>
       <div class="nav-label">HR Admin</div>
       <div class="nav-item active" onclick="showPage('page-hr-dashboard')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -952,7 +957,7 @@ let currentUser = null, currentSubId = null, selfScores = {}, subScores = {}, cu
 let GAS_READY = false;
 
 // ── Wrap google.script.run เป็น Promise ──────────────────────
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzcfV6TvLblcR7_nruJgZs_ZwXf9hMjS0NyfS251Xka_MQFrhDv4sEWZID7yR-PIJQHlQ/exec'; // ← วาง Web App URL ที่นี่
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzf5udu7NGbIbVuISYRPSu5FyM5z7zAI-mAKlUgR36zNCWSGgMyb9BN89iMHOgUVzdnSA/exec'; // ← วาง Web App URL ที่นี่
 
 function gasRun(fnName) {
   var args = Array.prototype.slice.call(arguments, 1);
