@@ -238,12 +238,7 @@ textarea{resize:vertical;min-height:70px;}
       <input type="password" id="login-pass" placeholder="XXXXX" maxlength="5" onkeydown="if(event.key==='Enter')doLogin()"/>
     </div>
     <button class="btn btn-primary btn-full" onclick="doLogin()" id="t-login-btn">เข้าสู่ระบบ / Login</button>
-    <div class="demo-hint">
-      <b>Demo:</b> O-Level: <code>AKR26010000</code>/<code>12345</code> &nbsp;|&nbsp;
-      S-TM: <code>AKR26020001</code>/<code>34567</code> &nbsp;|&nbsp;
-      M Final: <code>AKR26030001</code>/<code>45678</code> &nbsp;|&nbsp;
-      HR: <code>HR001</code>/<code>99999</code>
-    </div>
+    
   </div>
 </div>
 </div>
@@ -325,6 +320,11 @@ textarea{resize:vertical;min-height:70px;}
       <div class="nav-item" onclick="renderSelfEvalPage();showPage('page-self-eval')" id="nav-hr-self-eval">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <span data-th="ประเมินตนเอง" data-en="Self Evaluation">ประเมินตนเอง</span>
+      </div>
+      <div class="nav-item" onclick="showPage('page-eval-others')" id="nav-eval-others-hr" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span data-th="ประเมินพนักงาน" data-en="Evaluate Staff">ประเมินพนักงาน</span>
+        <span class="badge badge-red" id="nav-sub-count-hr" style="margin-left:auto;display:none;"></span>
       </div>
       <div class="nav-label">HR Admin</div>
       <div class="nav-item active" onclick="showPage('page-hr-dashboard')">
@@ -1002,9 +1002,15 @@ async function loadFromSheets() {
     inbox = r.inbox || {};
     SUBORDINATES = {};
     Object.entries(USERS).forEach(([id, u]) => {
+      // S-Level supervisor
       if (u.supervisorId) {
         if (!SUBORDINATES[u.supervisorId]) SUBORDINATES[u.supervisorId] = [];
-        SUBORDINATES[u.supervisorId].push(id);
+        if (!SUBORDINATES[u.supervisorId].includes(id)) SUBORDINATES[u.supervisorId].push(id);
+      }
+      // Final approver
+      if (u.finalId) {
+        if (!SUBORDINATES[u.finalId]) SUBORDINATES[u.finalId] = [];
+        if (!SUBORDINATES[u.finalId].includes(id)) SUBORDINATES[u.finalId].push(id);
       }
     });
     GAS_READY = true;
@@ -1169,6 +1175,9 @@ function setupSidebar(){
   const navOthers=document.getElementById('nav-eval-others');
   if(navOthers){navOthers.style.display=subs.length>0?'':'none';
     const cnt=document.getElementById('nav-sub-count');if(cnt&&subs.length>0){cnt.textContent=subs.length;cnt.style.display='';}}
+  var navOthersHr=document.getElementById('nav-eval-others-hr');
+  if(navOthersHr){navOthersHr.style.display=subs.length>0?'':'none';
+    var cntHr=document.getElementById('nav-sub-count-hr');if(cntHr&&subs.length>0){cntHr.textContent=subs.length;cntHr.style.display='';}}
 }
 
 // ── NAVIGATION ──
