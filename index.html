@@ -956,7 +956,7 @@ let currentUser = null, currentSubId = null, selfScores = {}, subScores = {}, cu
 let GAS_READY = false;
 
 // ── Wrap google.script.run เป็น Promise ──────────────────────
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzcfV6TvLblcR7_nruJgZs_ZwXf9hMjS0NyfS251Xka_MQFrhDv4sEWZID7yR-PIJQHlQ/exec'; // ← วาง Web App URL ที่นี่
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzf5udu7NGbIbVuISYRPSu5FyM5z7zAI-mAKlUgR36zNCWSGgMyb9BN89iMHOgUVzdnSA/exec'; // ← วาง Web App URL ที่นี่
 
 function gasRun(fnName) {
   var args = Array.prototype.slice.call(arguments, 1);
@@ -1132,12 +1132,11 @@ function setupSidebar(){
   const navOthers=document.getElementById('nav-eval-others');
   if(navOthers){navOthers.style.display=subs.length>0?'':'none';
     const cnt=document.getElementById('nav-sub-count');if(cnt&&subs.length>0){cnt.textContent=subs.length;cnt.style.display='';}}
-}
-
-
   var navOthersHr=document.getElementById('nav-eval-others-hr');
   if(navOthersHr){navOthersHr.style.display=subs.length>0?'':'none';
-    var cntHr=document.getElementById('nav-sub-count-hr');if(cntHr&&subs.length>0){cntHr.textContent=subs.length;cntHr.style.display='';}}// ── NAVIGATION ──
+    var cntHr=document.getElementById('nav-sub-count-hr');if(cntHr&&subs.length>0){cntHr.textContent=subs.length;cntHr.style.display='';}}
+
+}// ── NAVIGATION ──
 const PAGE_TITLES={
   'page-home':{th:'หน้าหลัก',en:'Home'},'page-self-eval':{th:'ประเมินตนเอง',en:'Self Evaluation'},
   'page-eval-others':{th:'ประเมินพนักงาน',en:'Evaluate Staff'},'page-eval-sub':{th:'ประเมินพนักงาน',en:'Evaluate Staff'},
