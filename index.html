@@ -1268,6 +1268,7 @@ function buildEvalSections(containerId,lk,scoresObj,prefix){
 }
 
 function selectScoreItem(prefix,si,ii,score,lk){
+  setUnsaved(true);
   const scoresObj=prefix==='self'?selfScores:subScores;
   if(!scoresObj[si])scoresObj[si]={};scoresObj[si][ii]=score;
   for(let n=1;n<=5;n++){const btn=document.getElementById(("btn-"+(prefix)+"-"+(si)+"-"+(ii)+"-"+(n)+""));if(btn){btn.className=("score-btn s"+(n)+""+(n===score?' sel':'')+"");}}
@@ -1290,6 +1291,7 @@ function submitSelfEval(){
   const score=calcScore(currentUser.level,selfScores);initEmpStore(currentUser.id);
   evalStore[currentUser.id].selfScores=JSON.parse(JSON.stringify(selfScores));
   evalStore[currentUser.id].selfTotal=score;
+  setUnsaved(false);
   syncEval(currentUser.id);
   const grade=getGrade(score);showToast((""+(t('self-eval-saved'))+" – "+(grade.letter)+" ("+(score.toFixed(2))+")"),'success');
   const supId=currentUser.supervisorId;
@@ -1354,6 +1356,7 @@ function submitSubEval(){
     addInboxMsg('HR001',{from:currentLang==='th'?'ระบบ KPI':'KPI System',subject:("รอ Final – "+(userName(sub))+""),body:("S-Eval "+(t('done'))+""),link:'page-hr-dashboard'});
   }
   showToast((""+(t('sub-eval-saved'))+" – "+(userName(sub))+""),'success');
+  setUnsaved(false);
   syncEval(currentSubId);
   showPage('page-eval-others');
 }
@@ -2233,6 +2236,23 @@ function renderScoreHistory() {
 
   container.innerHTML = html;
 }
+
+// ── UNSAVED CHANGES WARNING ──────────────────────────────────
+var hasUnsavedChanges = false;
+
+function setUnsaved(val) {
+  hasUnsavedChanges = val;
+}
+
+window.addEventListener('beforeunload', function(e) {
+  if (!hasUnsavedChanges) return;
+  var msg = currentLang === 'en'
+    ? 'You have unsaved evaluation data. Are you sure you want to leave? Your data will be lost.'
+    : 'มีข้อมูลการประเมินที่ยังไม่ได้บันทึก หากออกจากหน้านี้ข้อมูลจะหายไป';
+  e.preventDefault();
+  e.returnValue = msg;
+  return msg;
+});
 
 // Init
 window.addEventListener('DOMContentLoaded',()=>{ applyTranslations(); loadFromSheets(); });
