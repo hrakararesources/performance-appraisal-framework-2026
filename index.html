@@ -1353,6 +1353,8 @@ function toggleSpecialReason(){const c=document.getElementById('chk-special');do
 function submitSubEval(){
   const sub=USERS[currentSubId];const total=totalItems(sub.level);const answered=countAnswered(subScores);
   if(answered<total){showToast((""+(t('please-answer-all'))+" ("+(answered)+"/"+(total)+")"));return;}
+  var commentEl=document.getElementById('sub-comment-text');
+  var commentText=commentEl?commentEl.value.trim():'';
   const score=calcScore(sub.level,subScores);initEmpStore(currentSubId);
   if(currentUser.isFinal){
     evalStore[currentSubId].finalScores=JSON.parse(JSON.stringify(subScores));
