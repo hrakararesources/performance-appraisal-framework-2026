@@ -451,7 +451,7 @@ textarea{resize:vertical;min-height:70px;}
         <div id="sub-self-summary"></div>
       </div>
       <div class="card" style="background:var(--bg);" id="sub-slevel-card">
-        <div class="card-title" style="margin-bottom:.75rem;font-size:14px;">ผลการประเมินของหัวหน้างาน (S-Level)</div>
+        <div class="card-title" style="margin-bottom:.75rem;font-size:14px;" id="sub-slevel-title">ผลการประเมินของหัวหน้างาน (S-Level)</div>
         <div id="sub-slevel-summary"></div>
         <div id="sub-slevel-sections" style="margin-top:1rem;"></div>
       </div>
@@ -795,6 +795,7 @@ function setLang(lang) {
   if(currentPage === 'page-topic-editor') initTopicEditor();
   if(currentPage === 'page-score-desc-editor') initDescEditor();
   if(currentUser) setupSidebar();
+  if(currentPage==='page-eval-sub'&&currentSubId) renderSLevelSummary();
 }
 
 function applyTranslations() {
@@ -2056,6 +2057,12 @@ function switchSubTab(tab) {
 }
 
 function renderSLevelSummary() {
+  // Update card title language
+  var slevelCard = document.getElementById('sub-slevel-card');
+  if (slevelCard) {
+    var title = document.getElementById('sub-slevel-title');
+    if (title) title.textContent = currentLang==='en' ? 'Supervisor Evaluation Result (S-Level)' : 'ผลการประเมินของหัวหน้างาน (S-Level)';
+  }
   const eData = evalStore[currentSubId] || {};
   const u = USERS[currentSubId];
   if (!u) return;
