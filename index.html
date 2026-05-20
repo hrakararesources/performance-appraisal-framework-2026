@@ -456,6 +456,10 @@ textarea{resize:vertical;min-height:70px;}
         <div id="sub-slevel-sections" style="margin-top:1rem;"></div>
       </div>
       <div id="sub-eval-sections"></div>
+      <div class="card" id="sub-comment-block">
+        <div class="card-title" style="margin-bottom:.75rem;font-size:14px;" id="t-comment-label" data-th="ความคิดเห็นของผู้ประเมิน" data-en="Evaluator Comment">ความคิดเห็นของผู้ประเมิน</div>
+        <textarea id="sub-comment-text" rows="4" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;" placeholder="กรอกความคิดเห็นหรือข้อเสนอแนะเพิ่มเติม (ไม่บังคับ)"></textarea>
+      </div>
       <div id="special-adjust-block" class="card" style="display:none;border:2px solid var(--warning);">
         <div class="card-title" style="color:var(--warning);margin-bottom:.75rem;" id="t-special-title">⭐ เสนอปรับพิเศษ (Final Evaluator)</div>
         <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
@@ -1057,6 +1061,8 @@ function syncEval(empId) {
     final_total: e.finalTotal || '',
     special_adj: e.specialAdj || false,
     special_reason: e.specialReason || '',
+    s_comment: e.sComment || '',
+    final_comment: e.finalComment || '',
     self_scores:  e.selfScores  || null,
     s_scores:     e.sScores     || null,
     final_scores: e.finalScores || null,
@@ -1316,6 +1322,12 @@ function openSubEval(subId){
   // Final approver เริ่มต้นด้วยคะแนนจาก S-Level, S-Level เริ่มต้นด้วยคะแนนจาก Self
   // render S-Level summary automatically
   setTimeout(function(){ renderSLevelSummary(); }, 100);
+  // load existing comment
+  var commentEl = document.getElementById('sub-comment-text');
+  if(commentEl) {
+    var eData2 = evalStore[subId] || {};
+    commentEl.value = currentUser.isFinal ? (eData2.finalComment||'') : (eData2.sComment||'');
+  }
   if(currentUser.isFinal && eData.sScores) {
     subScores = JSON.parse(JSON.stringify(eData.sScores));
   } else if(!currentUser.isFinal && eData.selfScores) {
@@ -1351,6 +1363,7 @@ function submitSubEval(){
   } else {
     evalStore[currentSubId].sScores=JSON.parse(JSON.stringify(subScores));
     evalStore[currentSubId].sTotal=score;
+    if(commentText) evalStore[currentSubId].sComment=commentText;
     const fid=USERS[currentSubId].finalId;
     if(fid)addInboxMsg(fid,{from:currentLang==='th'?'ระบบ KPI':'KPI System',subject:(""+(t('final-step'))+" – "+(userName(sub))+""),body:("S-Level "+(t('score'))+": "+(score.toFixed(2))+""),link:'page-eval-others'});
     addInboxMsg('HR001',{from:currentLang==='th'?'ระบบ KPI':'KPI System',subject:("รอ Final – "+(userName(sub))+""),body:("S-Eval "+(t('done'))+""),link:'page-hr-dashboard'});
@@ -2073,6 +2086,13 @@ function renderSLevelSummary() {
   // Summary
   const sTotal = eData.sTotal;
   const sg = sTotal ? getGrade(sTotal) : null;
+  // Show S-Level comment for Final to read
+  var sCommentEl = document.getElementById('sub-slevel-comment');
+  if (sCommentEl) {
+    var sc = eData.sComment || '';
+    sCommentEl.style.display = sc ? '' : 'none';
+    sCommentEl.querySelector('p').textContent = sc;
+  }
   const summaryEl = document.getElementById('sub-slevel-summary');
   if (summaryEl) {
     summaryEl.innerHTML = sTotal
