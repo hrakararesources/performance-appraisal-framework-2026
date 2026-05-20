@@ -329,10 +329,6 @@ textarea{resize:vertical;min-height:70px;}
         <span data-th="ประเมินพนักงาน" data-en="Evaluate Staff">ประเมินพนักงาน</span>
         <span class="badge badge-red" id="nav-sub-count-hr" style="margin-left:auto;display:none;"></span>
       </div>
-      <div class="nav-item" onclick="showPage('page-score-history')" id="nav-score-history">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span data-th="ประวัติคะแนน" data-en="Score History">ประวัติคะแนน</span>
-      </div>
       <div class="nav-label">HR Admin</div>
       <div class="nav-item active" onclick="showPage('page-hr-dashboard')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -1201,7 +1197,7 @@ const PAGE_TITLES={
   'page-inbox':{th:'กล่องจดหมาย',en:'Inbox'},'page-my-result':{th:'ผลการประเมินของฉัน',en:'My Results'},
   'page-hr-dashboard':{th:'แดชบอร์ด',en:'Dashboard'},'page-hr-employees':{th:'จัดการพนักงาน',en:'Manage Employees'},
   'page-hr-report':{th:'รายงาน',en:'Reports'},'page-topic-editor':{th:'จัดการหัวข้อการประเมิน',en:'Manage Eval Topics'},'page-score-desc-editor':{th:'แก้ไขคำอธิบายคะแนน',en:'Edit Score Descriptions'},
-  'page-hr-settings':{th:'ตั้งค่า',en:'Settings'},'page-score-history':{th:'ประวัติคะแนน',en:'Score History'},
+  'page-hr-settings':{th:'ตั้งค่า',en:'Settings'},
 };
 function showPage(pid){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1219,7 +1215,6 @@ function showPage(pid){
   if(pid==='page-hr-report')renderHrReport();
   if(pid==='page-topic-editor')initTopicEditor();
   if(pid==='page-score-desc-editor')initDescEditor();
-  if(pid==='page-score-history')initScoreHistory();
   if(currentUser) setupSidebar();
 }
 
@@ -2235,11 +2230,6 @@ window.addEventListener('DOMContentLoaded',()=>{ applyTranslations(); loadFromSh
 
 </script>
 
-<!-- ── Score History Page ───────────────────────────────── -->
-<div id="page-score-history" class="page hidden">
-  <div class="page-header">
-    <h2 id="t-score-history-title" data-th="ประวัติคะแนนรายหัวข้อ" data-en="Score History by Topic">ประวัติคะแนนรายหัวข้อ</h2>
-  </div>
   <div class="card" style="margin-bottom:1rem;">
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <select id="sh-emp-select" onchange="renderScoreHistory()" style="flex:1;min-width:200px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;">
