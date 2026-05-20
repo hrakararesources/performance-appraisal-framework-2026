@@ -1174,8 +1174,12 @@ function setupSidebar(){
   document.getElementById('sb-avatar').textContent=(userName(u)).charAt(0);
   document.getElementById('sb-name').textContent=userName(u);
   document.getElementById('sb-id').textContent=u.id;
-  document.getElementById('sb-dept').textContent=u.dept?u.dept[currentLang]:'—';
-  document.getElementById('sb-position').textContent=u.position?u.position[currentLang]:'—';
+  document.getElementById('sb-dept').textContent=u.dept?(u.dept[currentLang]||u.dept.th):'—';
+  document.getElementById('sb-position').textContent=u.position?(u.position[currentLang]||u.position.th):'—';
+  var deptLbl=document.getElementById('t-dept-label');
+  var posLbl=document.getElementById('t-pos-label');
+  if(deptLbl) deptLbl.textContent=currentLang==='en'?'DEPT':'ฝ่าย';
+  if(posLbl) posLbl.textContent=currentLang==='en'?'POSITION':'ตำแหน่ง';
   document.getElementById('sb-level-badge').textContent=u.level;
   const tenEl=document.getElementById('sb-tenure-badge');
   if(tenEl){const y=calcTenure(u.startDate);tenEl.textContent=y!==null?tenureLabel(u.startDate):'';tenEl.style.display=y!==null?'':'none';}
