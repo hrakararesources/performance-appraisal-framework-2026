@@ -451,22 +451,13 @@ textarea{resize:vertical;min-height:70px;}
         </div>
       </div>
       <div class="card" style="background:var(--bg);">
-        <!-- Tabs -->
-        <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;">
-          <button id="tab-self-btn" onclick="switchSubTab('self')" style="padding:8px 18px;border:none;background:none;font-size:13px;font-weight:600;color:var(--primary);border-bottom:2.5px solid var(--primary);cursor:pointer;margin-bottom:-2px;" data-th="ประเมินตนเอง" data-en="Self Eval">ประเมินตนเอง</button>
-          <button id="tab-slevel-btn" onclick="switchSubTab('slevel')" style="padding:8px 18px;border:none;background:none;font-size:13px;font-weight:600;color:var(--text-muted);border-bottom:2.5px solid transparent;cursor:pointer;margin-bottom:-2px;" data-th="หัวหน้างาน" data-en="S-Level">หัวหน้างาน</button>
-        </div>
-        <!-- Self tab -->
-        <div id="tab-self-content">
-          <div class="card-title" style="margin-bottom:.75rem;font-size:14px;" id="t-self-eval-result-label">ผลการประเมินตนเองของพนักงาน</div>
-          <div id="sub-self-summary"></div>
-        </div>
-        <!-- S-Level tab -->
-        <div id="tab-slevel-content" style="display:none;">
-          <div class="card-title" style="margin-bottom:.75rem;font-size:14px;">ผลการประเมินของหัวหน้างาน (S-Level)</div>
-          <div id="sub-slevel-summary"></div>
-          <div id="sub-slevel-sections" style="margin-top:1rem;"></div>
-        </div>
+        <div class="card-title" style="margin-bottom:.75rem;font-size:14px;" id="t-self-eval-result-label">ผลการประเมินตนเองของพนักงาน</div>
+        <div id="sub-self-summary"></div>
+      </div>
+      <div class="card" style="background:var(--bg);" id="sub-slevel-card">
+        <div class="card-title" style="margin-bottom:.75rem;font-size:14px;">ผลการประเมินของหัวหน้างาน (S-Level)</div>
+        <div id="sub-slevel-summary"></div>
+        <div id="sub-slevel-sections" style="margin-top:1rem;"></div>
       </div>
       <div id="sub-eval-sections"></div>
       <div id="special-adjust-block" class="card" style="display:none;border:2px solid var(--warning);">
@@ -1322,6 +1313,8 @@ function openSubEval(subId){
   currentSubId=subId;
   const sub=USERS[subId];const eData=evalStore[subId]||{};
   // Final approver เริ่มต้นด้วยคะแนนจาก S-Level, S-Level เริ่มต้นด้วยคะแนนจาก Self
+  // render S-Level summary automatically
+  setTimeout(function(){ renderSLevelSummary(); }, 100);
   if(currentUser.isFinal && eData.sScores) {
     subScores = JSON.parse(JSON.stringify(eData.sScores));
   } else if(!currentUser.isFinal && eData.selfScores) {
